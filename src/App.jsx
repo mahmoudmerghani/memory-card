@@ -17,7 +17,12 @@ function shuffle(array) {
 }
 
 function getRandomCardIds(cardIds, unmatchedIds, numOfCards) {
-    if (unmatchedIds.length === 0 || cardIds.length === 0) return [];
+    if (
+        unmatchedIds.length === 0 ||
+        cardIds.length === 0 ||
+        numOfCards > cardIds.length
+    )
+        return [];
     // unmatched ids are the cards that are still not clicked
     // there should be at least one card from the unmatched ids
     const ids = new Set();
@@ -42,36 +47,85 @@ export default function App() {
     const [highScore, setHighScore] = useState(0);
     const [isNewHighScore, setIsNewHighScore] = useState(false);
     const [unmatchedIds, setUnmatchedIds] = useState(characterIds);
-    const [difficulty, setDifficulty] = useState('easy');
-    
+    const [difficulty, setDifficulty] = useState("easy");
+    const [areCardsFlipped, setAreCardsFlipped] = useState(false);
+    const [isAnimationPlaying, setIsAnimationPlaying] = useState(false);
+
     const getDifficultyCards = (difficulty) => {
-        switch(difficulty) {
-            case 'easy': return 3;
-            case 'medium': return 5;
-            case 'hard': return 7;
-            default: return 3;
+        switch (difficulty) {
+            case "easy":
+                return 3;
+            case "medium":
+                return 5;
+            case "hard":
+                return 7;
+            default:
+                return 3;
         }
     };
-    
+
     const numOfCards = getDifficultyCards(difficulty);
-    const randomCardsIds = getRandomCardIds(
-        characterIds,
-        unmatchedIds,
-        numOfCards
+
+    const [randomCardsIds, setRandomCardsIds] = useState(
+        getRandomCardIds(characterIds, unmatchedIds, numOfCards)
     );
 
+    // the function takes the number of cards as a parameter
+    // to prevent using stale values of numOfCards when changing the difficulty
+    function reset(currentNumberOfCards = numOfCards) {
+        setIsGameOver(false);
+        setScore(0);
+        setIsNewHighScore(false);
+        setUnmatchedIds(characterIds);
+        setRandomCardsIds(
+            getRandomCardIds(characterIds, characterIds, currentNumberOfCards)
+        );
+        setAreCardsFlipped(false);
+        setIsAnimationPlaying(false);
+    }
+
     function handleCardClick(cardId) {
+        if (isAnimationPlaying) return;
+
+        setAreCardsFlipped(true);
+        setIsAnimationPlaying(true);
+
         if (unmatchedIds.includes(cardId)) {
-            setUnmatchedIds(unmatchedIds.filter((id) => id !== cardId));
+            const newUnmatchedIds = unmatchedIds.filter((id) => id !== cardId);
+            setUnmatchedIds(newUnmatchedIds);
             setScore(score + 1);
-            // if all cards are clicked when perfect score
-            if ((score + 1) === characterIds.length) {
+            // if all cards are clicked then it is a perfect score
+            if (score + 1 === characterIds.length) {
                 const newScore = score + 1;
                 const isNewHigh = newScore > highScore;
                 setHighScore(Math.max(highScore, newScore));
                 setIsNewHighScore(isNewHigh);
                 setIsGameOver(true);
+                return;
             }
+
+            /*
+                the timeline of the animation:
+                0 -> 0.5s: card flipping and showing the backface
+                0.5s -> 0.7s: card showing the backface for 0.2s
+                0.7s -> 1.2s: card flipping back to show front face
+
+                the user can only interact again after 1s
+            */
+
+            // get the next set of cards only after the first half of the animation
+            // has ended to prevent the user from seeing the new cards before the animation end
+            setTimeout(() => {
+                setRandomCardsIds(
+                    getRandomCardIds(characterIds, newUnmatchedIds, numOfCards)
+                );
+                setAreCardsFlipped(false);
+            }, 700);
+
+            // allow the user to click again after 1s to prevent accidental clicks during the animation
+            setTimeout(() => {
+                setIsAnimationPlaying(false);
+            }, 1000);
         } else {
             const isNewHigh = score > highScore;
             setHighScore(Math.max(highScore, score));
@@ -80,33 +134,23 @@ export default function App() {
         }
     }
 
-    function handlePlayAgain() {
-        setIsGameOver(false);
-        setScore(0);
-        setIsNewHighScore(false);
-        setUnmatchedIds(characterIds);
-    }
-
     function handleDifficultyChange(newDifficulty) {
         setDifficulty(newDifficulty);
         // Reset game when difficulty changes
-        setIsGameOver(false);
-        setScore(0);
-        setIsNewHighScore(false);
-        setUnmatchedIds(characterIds);
+        reset(getDifficultyCards(newDifficulty));
     }
 
     return (
         <div className="game">
-            <Header 
-                score={score} 
-                highScore={highScore} 
+            <Header
+                score={score}
+                highScore={highScore}
                 difficulty={difficulty}
                 onDifficultyChange={handleDifficultyChange}
             />
             {isGameOver ? (
-                <GameOver 
-                    onPlayAgain={handlePlayAgain} 
+                <GameOver
+                    onPlayAgain={() => reset()}
                     isPerfect={score === characterIds.length}
                     isNewHighScore={isNewHighScore}
                 />
@@ -120,6 +164,7 @@ export default function App() {
                                 imageUrl={card.url}
                                 text={card.name}
                                 onClick={handleCardClick}
+                                isFlipped={areCardsFlipped}
                             />
                         );
                     })}
