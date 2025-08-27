@@ -1,10 +1,12 @@
-import "../styles/Card.css"
+import "../styles/Card.css";
 
-export default function Card({ imageUrl, text, onClick }) {
+export default function Card({ id, imageUrl, text, onClick }) {
     return (
-        <button onClick={onClick}>
-            <div className="card">
+        <button onClick={() => onClick(id)} className="card">
+            <div className="image">
                 <img src={imageUrl} alt={text} />
+            </div>
+            <div className="text">
                 <h2>{text}</h2>
             </div>
         </button>

@@ -1,0 +1,49 @@
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.card-container button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.card-container > * {
+    /* flex-grow: 1; */
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+    
+}
+
+.card {
+    width: 250px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    border: 2px solid yellow;
+    cursor: pointer;
+}
+
+.image {
+    flex: 1;
+}
+
+.text {
+    color: white;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
