@@ -42,7 +42,18 @@ export default function App() {
     const [highScore, setHighScore] = useState(0);
     const [isNewHighScore, setIsNewHighScore] = useState(false);
     const [unmatchedIds, setUnmatchedIds] = useState(characterIds);
-    const [numOfCards, setNumOfCards] = useState(3);
+    const [difficulty, setDifficulty] = useState('easy');
+    
+    const getDifficultyCards = (difficulty) => {
+        switch(difficulty) {
+            case 'easy': return 3;
+            case 'medium': return 5;
+            case 'hard': return 7;
+            default: return 3;
+        }
+    };
+    
+    const numOfCards = getDifficultyCards(difficulty);
     const randomCardsIds = getRandomCardIds(
         characterIds,
         unmatchedIds,
@@ -76,9 +87,23 @@ export default function App() {
         setUnmatchedIds(characterIds);
     }
 
+    function handleDifficultyChange(newDifficulty) {
+        setDifficulty(newDifficulty);
+        // Reset game when difficulty changes
+        setIsGameOver(false);
+        setScore(0);
+        setIsNewHighScore(false);
+        setUnmatchedIds(characterIds);
+    }
+
     return (
         <div className="game">
-            <Header score={score} highScore={highScore} />
+            <Header 
+                score={score} 
+                highScore={highScore} 
+                difficulty={difficulty}
+                onDifficultyChange={handleDifficultyChange}
+            />
             {isGameOver ? (
                 <GameOver 
                     onPlayAgain={handlePlayAgain} 

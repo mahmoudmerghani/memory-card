@@ -5,9 +5,33 @@ header {
     padding: 1rem 2rem;
 }
 
-
 header img {
     width: 300px;
+}
+
+.difficulty-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.difficulty-selector label {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.difficulty-selector select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    cursor: pointer;
+}
+
+.difficulty-selector option {
+    background-color: black;
+
 }
 
 .score {
