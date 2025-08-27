@@ -3,3 +3,11 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+:root {
+    --main-clr: #c69e6e;
+}
+
+body {
+    color: white;
+}

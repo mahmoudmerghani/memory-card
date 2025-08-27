@@ -1,6 +1,8 @@
 import { useState } from "react";
 import characters from "./characters";
 import Card from "./components/Card";
+import Header from "./components/Header";
+import GameOver from "./components/GameOver";
 import "./App.css";
 
 const characterIds = characters.map((c) => c.id);
@@ -15,6 +17,7 @@ function shuffle(array) {
 }
 
 function getRandomCardIds(cardIds, unmatchedIds, numOfCards) {
+    if (unmatchedIds.length === 0 || cardIds.length === 0) return [];
     // unmatched ids are the cards that are still not clicked
     // there should be at least one card from the unmatched ids
     const ids = new Set();
@@ -35,8 +38,11 @@ function getRandomCardIds(cardIds, unmatchedIds, numOfCards) {
 
 export default function App() {
     const [isGameOver, setIsGameOver] = useState(false);
+    const [score, setScore] = useState(0);
+    const [highScore, setHighScore] = useState(0);
+    const [isNewHighScore, setIsNewHighScore] = useState(false);
     const [unmatchedIds, setUnmatchedIds] = useState(characterIds);
-    const [numOfCards, setNumOfCards] = useState(4);
+    const [numOfCards, setNumOfCards] = useState(3);
     const randomCardsIds = getRandomCardIds(
         characterIds,
         unmatchedIds,
@@ -46,15 +52,39 @@ export default function App() {
     function handleCardClick(cardId) {
         if (unmatchedIds.includes(cardId)) {
             setUnmatchedIds(unmatchedIds.filter((id) => id !== cardId));
+            setScore(score + 1);
+            // if all cards are clicked when perfect score
+            if ((score + 1) === characterIds.length) {
+                const newScore = score + 1;
+                const isNewHigh = newScore > highScore;
+                setHighScore(Math.max(highScore, newScore));
+                setIsNewHighScore(isNewHigh);
+                setIsGameOver(true);
+            }
         } else {
+            const isNewHigh = score > highScore;
+            setHighScore(Math.max(highScore, score));
+            setIsNewHighScore(isNewHigh);
             setIsGameOver(true);
         }
     }
 
+    function handlePlayAgain() {
+        setIsGameOver(false);
+        setScore(0);
+        setIsNewHighScore(false);
+        setUnmatchedIds(characterIds);
+    }
+
     return (
         <div className="game">
+            <Header score={score} highScore={highScore} />
             {isGameOver ? (
-                "Game over"
+                <GameOver 
+                    onPlayAgain={handlePlayAgain} 
+                    isPerfect={score === characterIds.length}
+                    isNewHighScore={isNewHighScore}
+                />
             ) : (
                 <div className="card-container">
                     {randomCardsIds.map((id) => {

@@ -1,0 +1,15 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+
+header img {
+    width: 300px;
+}
+
+.score {
+    font-size: 1.2rem;
+}
