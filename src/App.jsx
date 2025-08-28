@@ -150,7 +150,7 @@ export default function App() {
             />
             {isGameOver ? (
                 <GameOver
-                    // call reset() explicity to prevent the click event (e) 
+                    // call reset() explicity to prevent the click event (e)
                     // from being passed to reset
                     onPlayAgain={() => reset()}
                     isPerfect={score === characterIds.length}
@@ -158,10 +158,13 @@ export default function App() {
                 />
             ) : (
                 <div className="card-container">
-                    {randomCardsIds.map((id) => {
+                    {randomCardsIds.map((id, index) => {
                         const card = characters.find((c) => c.id === id);
                         return (
                             <Card
+                                // use index as key so cards stay stable across shuffles,
+                                // preventing react from remounting cards and breaking the flip animation
+                                key={index}
                                 id={id}
                                 imageUrl={card.url}
                                 text={card.name}
