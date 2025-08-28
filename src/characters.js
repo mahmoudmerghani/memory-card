@@ -2,6 +2,7 @@ let idCounter = 0;
 
 const files = import.meta.glob("./assets/characters/*.webp", { eager: true });
 
+// turn filenames from first-second to First Second 
 const characters = Object.entries(files).map(([path, module]) => {
     const filename = path.split("/").pop().replace(".webp", "");
 

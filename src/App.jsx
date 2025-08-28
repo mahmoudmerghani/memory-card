@@ -150,6 +150,8 @@ export default function App() {
             />
             {isGameOver ? (
                 <GameOver
+                    // call reset() explicity to prevent the click event (e) 
+                    // from being passed to reset
                     onPlayAgain={() => reset()}
                     isPerfect={score === characterIds.length}
                     isNewHighScore={isNewHighScore}
