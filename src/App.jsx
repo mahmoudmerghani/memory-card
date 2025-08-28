@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import characters from "./characters";
 import Card from "./components/Card";
 import Header from "./components/Header";
@@ -50,6 +50,14 @@ export default function App() {
     const [difficulty, setDifficulty] = useState("easy");
     const [areCardsFlipped, setAreCardsFlipped] = useState(false);
     const [isAnimationPlaying, setIsAnimationPlaying] = useState(false);
+
+    // preload images
+    useEffect(() => {
+        characters.forEach((c) => {
+            const img = new Image();
+            img.src = c.url;
+        });
+    }, []);
 
     const getDifficultyCards = (difficulty) => {
         switch (difficulty) {
