@@ -4,6 +4,7 @@ header {
     align-items: center;
     padding: 1rem 2rem;
     flex-wrap: wrap;
+    margin-bottom: 3rem;
 }
 
 header img {
