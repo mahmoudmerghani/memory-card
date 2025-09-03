@@ -1,26 +1,14 @@
-.card-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2rem;
-    padding: 2rem;
-    padding-top: 0;
-}
-
-.card-container button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
-.card-container img {
+.card img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
 .card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
     width: 250px;
     height: 350px;
     position: relative;
