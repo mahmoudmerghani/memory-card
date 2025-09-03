@@ -72,7 +72,6 @@ export default function Game({ difficulty, onCorrectPick, onWrongPick }) {
     useEffect(() => {
         return () => {
             timeouts.current.forEach(clearTimeout);
-            console.log("cleared timeout");
         };
     }, []);
 
