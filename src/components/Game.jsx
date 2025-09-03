@@ -1,6 +1,6 @@
 import Card from "./Card";
 import characters from "../characters";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import "../styles/Game.css";
 
 // preload images
@@ -66,6 +66,15 @@ export default function Game({ difficulty, onCorrectPick, onWrongPick }) {
     const [randomCardsIds, setRandomCardsIds] = useState(
         getRandomCardIds(characterIds, unmatchedIds, numOfCards)
     );
+    const timeouts = useRef([]);
+
+    // clear any lingering timeouts when the component unmounts
+    useEffect(() => {
+        return () => {
+            timeouts.current.forEach(clearTimeout);
+            console.log("cleared timeout");
+        };
+    }, []);
 
     function handleCardClick(cardId) {
         if (isAnimationPlaying) return;
@@ -79,17 +88,19 @@ export default function Game({ difficulty, onCorrectPick, onWrongPick }) {
 
             // get the next set of cards only after the first half of the animation
             // has ended to prevent the user from seeing the new cards before the animation end
-            setTimeout(() => {
+            const timeout1 = setTimeout(() => {
                 setRandomCardsIds(
                     getRandomCardIds(characterIds, newUnmatchedIds, numOfCards)
                 );
                 setAreCardsFlipped(false);
             }, 700);
-            
+
             // allow the user to click again after 1s to prevent accidental clicks during the animation
-            setTimeout(() => {
+            const timeout2 = setTimeout(() => {
                 setIsAnimationPlaying(false);
             }, 1000);
+
+            timeouts.current = [timeout1, timeout2];
         } else {
             onWrongPick();
         }
